@@ -19,9 +19,11 @@ log_level = 2
 api = 33
 minapi = 21
 ndk = 25b
-android.build_tools_version = 37.0.0-rc1
+android.build_tools_version = 34.0.0
 android.accept_sdk_license = True
 android.sdkmanager_accept_license = True
+android.ndk_path = /home/runner/.buildozer/android/platform/android-ndk-r25b
+android.sdk_path = /home/runner/.buildozer/android/platform/android-sdk
 
 android.permissions = BLUETOOTH_SCAN, BLUETOOTH_CONNECT, BLUETOOTH_ADMIN, ACCESS_FINE_LOCATION
 android.extra_permissions = android.permission.BLUETOOTH_SCAN, android.permission.BLUETOOTH_CONNECT
