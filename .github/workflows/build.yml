@@ -15,53 +15,16 @@ jobs:
         with:
           python-version: '3.10'
       
-      - name: Install system dependencies
+      - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install -y git zip unzip openjdk-17-jdk python3-pip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev cmake libffi-dev libssl-dev wget
-      
-      - name: Install Python dependencies
-        run: |
           pip install --upgrade pip
           pip install cython virtualenv
           pip install buildozer
       
-      - name: Setup Android SDK
-        run: |
-          # Создаём структуру
-          mkdir -p ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest
-          mkdir -p ~/.buildozer/android/platform/android-sdk/licenses
-          
-          # Скачиваем cmdline-tools
-          wget -q https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip
-          unzip -q commandlinetools-linux-*.zip
-          mv cmdline-tools/* ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/
-          
-          # Добавляем в PATH
-          export PATH=$PATH:~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin
-          
-          # Принимаем лицензии
-          yes | sdkmanager --licenses --sdk_root=~/.buildozer/android/platform/android-sdk || true
-          
-          # Устанавливаем базовые компоненты
-          yes | sdkmanager "platform-tools" "platforms;android-33" --sdk_root=~/.buildozer/android/platform/android-sdk || true
-          
-          # Создаём ссылку для совместимости
-          mkdir -p ~/.buildozer/android/platform/android-sdk/tools/bin
-          ln -sf ~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin/sdkmanager ~/.buildozer/android/platform/android-sdk/tools/bin/sdkmanager
-          
-          echo "✅ SDK готов"
-      
-      - name: Force install build-tools 34.0.0
-        run: |
-          export PATH=$PATH:~/.buildozer/android/platform/android-sdk/cmdline-tools/latest/bin
-          yes | sdkmanager "build-tools;34.0.0" --sdk_root=~/.buildozer/android/platform/android-sdk
-          mkdir -p ~/.buildozer/android/platform/android-sdk/build-tools/34.0.0
-          echo "✅ build-tools 34.0.0 установлены"
-      
       - name: Build APK
         run: |
-          export ANDROID_HOME=~/.buildozer/android/platform/android-sdk
           buildozer android debug
       
       - name: Upload APK
