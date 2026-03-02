@@ -1,5 +1,5 @@
 """
-Метеостанция - Полное приложение для работы с метеостанцией на nRF52820
+Метеостанция - Приложение для работы с метеостанцией на nRF52820
 Протокол: Версия 1 от 12.11.2023
 """
 
@@ -534,7 +534,8 @@ class MeteorStationApp(App):
         status_layout.add_widget(Label(
             text=f'Устройство: {self.device_name}',
             font_size='12sp',
-            halign='left'
+            halign='left',
+            color=(0, 0, 0, 1)  # Чёрный цвет
         ))
         
         btn_layout = BoxLayout(size_hint=(0.5, 1), spacing=dp(5))
@@ -583,14 +584,18 @@ class MeteorStationApp(App):
         layout.add_widget(Label(text=self.temperature_ext, font_size='24sp', size_hint_y=None, height=dp(45)))
         
         btn_layout = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(15))
+        
+        # Увеличенная ширина для "Давление/Темп"
         btn_layout.add_widget(Button(
             text='Давление/Темп',
             font_size='12sp',
+            size_hint_x=0.6,
             on_press=lambda x: self.send_command(CMD.GET_VALUE_P_T)
         ))
         btn_layout.add_widget(Button(
             text='Влажность',
             font_size='12sp',
+            size_hint_x=0.4,
             on_press=lambda x: self.send_command(CMD.GET_VALUE_H_T)
         ))
         
@@ -600,87 +605,150 @@ class MeteorStationApp(App):
         return layout
     
     def create_coeff_tab(self):
-        layout = GridLayout(cols=2, spacing=dp(20), padding=dp(20), size_hint_y=None)
+        # Максимально уплотнённый layout
+        layout = GridLayout(cols=2, spacing=dp(8), padding=dp(10), size_hint_y=None)
         layout.bind(minimum_height=layout.setter('height'))
         
-        # Канал P
-        layout.add_widget(Label(text='Канал P (давление):', font_size='16sp', bold=True, size_hint_y=None, height=dp(45)))
+        # === Канал P ===
+        # Заголовок компактный
+        layout.add_widget(Label(
+            text='P:', 
+            font_size='14sp', 
+            bold=True, 
+            size_hint_y=None, 
+            height=dp(30),
+            halign='right'
+        ))
         layout.add_widget(Label(text=''))
         
-        layout.add_widget(Label(text='Коэф. A:', size_hint_y=None, height=dp(40)))
-        self.coeff_p_a_input = TextInput(text=self.coeff_p_a, multiline=False, size_hint_y=None, height=dp(40))
+        # A (очень компактно)
+        layout.add_widget(Label(text='A:', size_hint_y=None, height=dp(28), font_size='12sp'))
+        self.coeff_p_a_input = TextInput(
+            text=self.coeff_p_a, 
+            multiline=False, 
+            size_hint_y=None, 
+            height=dp(28),
+            font_size='12sp'
+        )
         layout.add_widget(self.coeff_p_a_input)
         
-        layout.add_widget(Label(text='Коэф. B:', size_hint_y=None, height=dp(40)))
-        self.coeff_p_b_input = TextInput(text=self.coeff_p_b, multiline=False, size_hint_y=None, height=dp(40))
+        # B
+        layout.add_widget(Label(text='B:', size_hint_y=None, height=dp(28), font_size='12sp'))
+        self.coeff_p_b_input = TextInput(
+            text=self.coeff_p_b, 
+            multiline=False, 
+            size_hint_y=None, 
+            height=dp(28),
+            font_size='12sp'
+        )
         layout.add_widget(self.coeff_p_b_input)
         
-        btn_p_layout = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(15))
+        # Кнопки максимально короткие
+        btn_p_layout = BoxLayout(size_hint_y=None, height=dp(32), spacing=dp(5))
         btn_p_layout.add_widget(Button(
-            text='Прочитать P',
+            text='P',
             font_size='12sp',
             on_press=lambda x: self.send_command(CMD.GET_COEFF_P)
         ))
         btn_p_layout.add_widget(Button(
-            text='Записать P',
+            text='P!',
             font_size='12sp',
             on_press=self.set_coeff_p
         ))
         layout.add_widget(Label(text=''))
         layout.add_widget(btn_p_layout)
         
-        layout.add_widget(Widget(size_hint_y=None, height=dp(15)))
-        layout.add_widget(Widget(size_hint_y=None, height=dp(15)))
+        # Минимальный разделитель
+        layout.add_widget(Widget(size_hint_y=None, height=dp(5)))
+        layout.add_widget(Widget(size_hint_y=None, height=dp(5)))
         
-        # Канал T
-        layout.add_widget(Label(text='Канал T (температура):', font_size='16sp', bold=True, size_hint_y=None, height=dp(45)))
+        # === Канал T ===
+        layout.add_widget(Label(
+            text='T:', 
+            font_size='14sp', 
+            bold=True, 
+            size_hint_y=None, 
+            height=dp(30),
+            halign='right'
+        ))
         layout.add_widget(Label(text=''))
         
-        layout.add_widget(Label(text='Коэф. A:', size_hint_y=None, height=dp(40)))
-        self.coeff_t_a_input = TextInput(text=self.coeff_t_a, multiline=False, size_hint_y=None, height=dp(40))
+        layout.add_widget(Label(text='A:', size_hint_y=None, height=dp(28), font_size='12sp'))
+        self.coeff_t_a_input = TextInput(
+            text=self.coeff_t_a, 
+            multiline=False, 
+            size_hint_y=None, 
+            height=dp(28),
+            font_size='12sp'
+        )
         layout.add_widget(self.coeff_t_a_input)
         
-        layout.add_widget(Label(text='Коэф. B:', size_hint_y=None, height=dp(40)))
-        self.coeff_t_b_input = TextInput(text=self.coeff_t_b, multiline=False, size_hint_y=None, height=dp(40))
+        layout.add_widget(Label(text='B:', size_hint_y=None, height=dp(28), font_size='12sp'))
+        self.coeff_t_b_input = TextInput(
+            text=self.coeff_t_b, 
+            multiline=False, 
+            size_hint_y=None, 
+            height=dp(28),
+            font_size='12sp'
+        )
         layout.add_widget(self.coeff_t_b_input)
         
-        btn_t_layout = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(15))
+        btn_t_layout = BoxLayout(size_hint_y=None, height=dp(32), spacing=dp(5))
         btn_t_layout.add_widget(Button(
-            text='Прочитать T',
+            text='T',
             font_size='12sp',
             on_press=lambda x: self.send_command(CMD.GET_COEFF_T)
         ))
         btn_t_layout.add_widget(Button(
-            text='Записать T',
+            text='T!',
             font_size='12sp',
             on_press=self.set_coeff_t
         ))
         layout.add_widget(Label(text=''))
         layout.add_widget(btn_t_layout)
         
-        layout.add_widget(Widget(size_hint_y=None, height=dp(15)))
-        layout.add_widget(Widget(size_hint_y=None, height=dp(15)))
+        layout.add_widget(Widget(size_hint_y=None, height=dp(5)))
+        layout.add_widget(Widget(size_hint_y=None, height=dp(5)))
         
-        # Канал H
-        layout.add_widget(Label(text='Канал H (влажность):', font_size='16sp', bold=True, size_hint_y=None, height=dp(45)))
+        # === Канал H ===
+        layout.add_widget(Label(
+            text='H:', 
+            font_size='14sp', 
+            bold=True, 
+            size_hint_y=None, 
+            height=dp(30),
+            halign='right'
+        ))
         layout.add_widget(Label(text=''))
         
-        layout.add_widget(Label(text='Коэф. A:', size_hint_y=None, height=dp(40)))
-        self.coeff_h_a_input = TextInput(text=self.coeff_h_a, multiline=False, size_hint_y=None, height=dp(40))
+        layout.add_widget(Label(text='A:', size_hint_y=None, height=dp(28), font_size='12sp'))
+        self.coeff_h_a_input = TextInput(
+            text=self.coeff_h_a, 
+            multiline=False, 
+            size_hint_y=None, 
+            height=dp(28),
+            font_size='12sp'
+        )
         layout.add_widget(self.coeff_h_a_input)
         
-        layout.add_widget(Label(text='Коэф. B:', size_hint_y=None, height=dp(40)))
-        self.coeff_h_b_input = TextInput(text=self.coeff_h_b, multiline=False, size_hint_y=None, height=dp(40))
+        layout.add_widget(Label(text='B:', size_hint_y=None, height=dp(28), font_size='12sp'))
+        self.coeff_h_b_input = TextInput(
+            text=self.coeff_h_b, 
+            multiline=False, 
+            size_hint_y=None, 
+            height=dp(28),
+            font_size='12sp'
+        )
         layout.add_widget(self.coeff_h_b_input)
         
-        btn_h_layout = BoxLayout(size_hint_y=None, height=dp(45), spacing=dp(15))
+        btn_h_layout = BoxLayout(size_hint_y=None, height=dp(32), spacing=dp(5))
         btn_h_layout.add_widget(Button(
-            text='Прочитать H',
+            text='H',
             font_size='12sp',
             on_press=lambda x: self.send_command(CMD.GET_COEFF_H)
         ))
         btn_h_layout.add_widget(Button(
-            text='Записать H',
+            text='H!',
             font_size='12sp',
             on_press=self.set_coeff_h
         ))
@@ -694,7 +762,7 @@ class MeteorStationApp(App):
         layout.bind(minimum_height=layout.setter('height'))
         
         # Период измерений
-        layout.add_widget(Label(text='Период измерений:', font_size='16sp', bold=True, size_hint_y=None, height=dp(45)))
+        layout.add_widget(Label(text='Период:', font_size='16sp', bold=True, size_hint_y=None, height=dp(45)))
         layout.add_widget(Label(text=''))
         
         layout.add_widget(Label(text='Текущий:', size_hint_y=None, height=dp(40)))
@@ -722,7 +790,7 @@ class MeteorStationApp(App):
         layout.add_widget(Widget(size_hint_y=None, height=dp(20)))
         
         # Дата и время
-        layout.add_widget(Label(text='Дата и время:', font_size='16sp', bold=True, size_hint_y=None, height=dp(45)))
+        layout.add_widget(Label(text='Дата/время:', font_size='16sp', bold=True, size_hint_y=None, height=dp(45)))
         layout.add_widget(Label(text=''))
         
         layout.add_widget(Label(text='На устройстве:', size_hint_y=None, height=dp(40)))
@@ -734,11 +802,14 @@ class MeteorStationApp(App):
             font_size='12sp',
             on_press=lambda x: self.send_command(CMD.GET_DATETIME)
         ))
-        btn_sync_layout.add_widget(Button(
+        # Увеличенная ширина для "Синхронизировать"
+        sync_btn = Button(
             text='Синхронизировать',
-            font_size='12sp',
+            font_size='11sp',
+            size_hint_x=0.7,
             on_press=self.sync_datetime
-        ))
+        )
+        btn_sync_layout.add_widget(sync_btn)
         layout.add_widget(Label(text=''))
         layout.add_widget(btn_sync_layout)
         
@@ -749,12 +820,12 @@ class MeteorStationApp(App):
         
         control_panel = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(10))
         control_panel.add_widget(Button(
-            text='Размер журнала',
+            text='Размер',
             font_size='12sp',
             on_press=lambda x: self.send_command(CMD.GET_LOG_SIZE)
         ))
         control_panel.add_widget(Button(
-            text='Читать журнал',
+            text='Читать',
             font_size='12sp',
             on_press=self.start_read_log
         ))
@@ -782,18 +853,18 @@ class MeteorStationApp(App):
         layout = GridLayout(cols=2, spacing=dp(20), padding=dp(20), size_hint_y=None)
         layout.bind(minimum_height=layout.setter('height'))
         
-        layout.add_widget(Label(text='Версия прошивки:', font_size='16sp', size_hint_y=None, height=dp(50)))
+        layout.add_widget(Label(text='Версия:', font_size='16sp', size_hint_y=None, height=dp(50)))
         layout.add_widget(Label(text=self.firmware_version, font_size='16sp', size_hint_y=None, height=dp(50)))
         
-        layout.add_widget(Label(text='Серийный номер:', font_size='16sp', size_hint_y=None, height=dp(50)))
+        layout.add_widget(Label(text='Серийный №:', font_size='16sp', size_hint_y=None, height=dp(50)))
         layout.add_widget(Label(text=self.serial_number, font_size='16sp', size_hint_y=None, height=dp(50)))
         
-        layout.add_widget(Label(text='Дата производства:', font_size='16sp', size_hint_y=None, height=dp(50)))
+        layout.add_widget(Label(text='Дата произв.:', font_size='16sp', size_hint_y=None, height=dp(50)))
         layout.add_widget(Label(text='---', font_size='16sp', size_hint_y=None, height=dp(50)))
         
         btn_layout = BoxLayout(size_hint_y=None, height=dp(50), spacing=dp(15))
         btn_layout.add_widget(Button(
-            text='Информация',
+            text='Инфо',
             font_size='12sp',
             on_press=lambda x: self.send_command(CMD.GET_DEVICE_INFO)
         ))
