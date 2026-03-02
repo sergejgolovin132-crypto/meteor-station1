@@ -605,23 +605,23 @@ class MeteorStationApp(App):
         return layout
     
     def create_coeff_tab(self):
-        # Максимально уплотнённый layout
+        # Максимально уплотнённый layout с подписями в тех же строках
         layout = GridLayout(cols=2, spacing=dp(8), padding=dp(10), size_hint_y=None)
         layout.bind(minimum_height=layout.setter('height'))
         
         # === Канал P ===
-        # Заголовок компактный
+        # Заголовок с подписью "Канал" в той же строке
         layout.add_widget(Label(
-            text='P:', 
+            text='Канал P:', 
             font_size='14sp', 
             bold=True, 
             size_hint_y=None, 
             height=dp(30),
-            halign='right'
+            halign='left'
         ))
         layout.add_widget(Label(text=''))
         
-        # A (очень компактно)
+        # A (подпись A слева, значение справа)
         layout.add_widget(Label(text='A:', size_hint_y=None, height=dp(28), font_size='12sp'))
         self.coeff_p_a_input = TextInput(
             text=self.coeff_p_a, 
@@ -632,7 +632,7 @@ class MeteorStationApp(App):
         )
         layout.add_widget(self.coeff_p_a_input)
         
-        # B
+        # B (подпись B слева, значение справа)
         layout.add_widget(Label(text='B:', size_hint_y=None, height=dp(28), font_size='12sp'))
         self.coeff_p_b_input = TextInput(
             text=self.coeff_p_b, 
@@ -643,19 +643,25 @@ class MeteorStationApp(App):
         )
         layout.add_widget(self.coeff_p_b_input)
         
-        # Кнопки максимально короткие
+        # Кнопки с подписью "Действия" в той же строке
+        layout.add_widget(Label(
+            text='Действия:', 
+            size_hint_y=None, 
+            height=dp(32), 
+            font_size='12sp',
+            halign='right'
+        ))
         btn_p_layout = BoxLayout(size_hint_y=None, height=dp(32), spacing=dp(5))
         btn_p_layout.add_widget(Button(
-            text='P',
-            font_size='12sp',
+            text='Чит',
+            font_size='11sp',
             on_press=lambda x: self.send_command(CMD.GET_COEFF_P)
         ))
         btn_p_layout.add_widget(Button(
-            text='P!',
-            font_size='12sp',
+            text='Зап',
+            font_size='11sp',
             on_press=self.set_coeff_p
         ))
-        layout.add_widget(Label(text=''))
         layout.add_widget(btn_p_layout)
         
         # Минимальный разделитель
@@ -664,12 +670,12 @@ class MeteorStationApp(App):
         
         # === Канал T ===
         layout.add_widget(Label(
-            text='T:', 
+            text='Канал T:', 
             font_size='14sp', 
             bold=True, 
             size_hint_y=None, 
             height=dp(30),
-            halign='right'
+            halign='left'
         ))
         layout.add_widget(Label(text=''))
         
@@ -693,18 +699,18 @@ class MeteorStationApp(App):
         )
         layout.add_widget(self.coeff_t_b_input)
         
+        layout.add_widget(Label(text='Действия:', size_hint_y=None, height=dp(32), font_size='12sp', halign='right'))
         btn_t_layout = BoxLayout(size_hint_y=None, height=dp(32), spacing=dp(5))
         btn_t_layout.add_widget(Button(
-            text='T',
-            font_size='12sp',
+            text='Чит',
+            font_size='11sp',
             on_press=lambda x: self.send_command(CMD.GET_COEFF_T)
         ))
         btn_t_layout.add_widget(Button(
-            text='T!',
-            font_size='12sp',
+            text='Зап',
+            font_size='11sp',
             on_press=self.set_coeff_t
         ))
-        layout.add_widget(Label(text=''))
         layout.add_widget(btn_t_layout)
         
         layout.add_widget(Widget(size_hint_y=None, height=dp(5)))
@@ -712,12 +718,12 @@ class MeteorStationApp(App):
         
         # === Канал H ===
         layout.add_widget(Label(
-            text='H:', 
+            text='Канал H:', 
             font_size='14sp', 
             bold=True, 
             size_hint_y=None, 
             height=dp(30),
-            halign='right'
+            halign='left'
         ))
         layout.add_widget(Label(text=''))
         
@@ -741,18 +747,18 @@ class MeteorStationApp(App):
         )
         layout.add_widget(self.coeff_h_b_input)
         
+        layout.add_widget(Label(text='Действия:', size_hint_y=None, height=dp(32), font_size='12sp', halign='right'))
         btn_h_layout = BoxLayout(size_hint_y=None, height=dp(32), spacing=dp(5))
         btn_h_layout.add_widget(Button(
-            text='H',
-            font_size='12sp',
+            text='Чит',
+            font_size='11sp',
             on_press=lambda x: self.send_command(CMD.GET_COEFF_H)
         ))
         btn_h_layout.add_widget(Button(
-            text='H!',
-            font_size='12sp',
+            text='Зап',
+            font_size='11sp',
             on_press=self.set_coeff_h
         ))
-        layout.add_widget(Label(text=''))
         layout.add_widget(btn_h_layout)
         
         return layout
@@ -802,14 +808,13 @@ class MeteorStationApp(App):
             font_size='12sp',
             on_press=lambda x: self.send_command(CMD.GET_DATETIME)
         ))
-        # Увеличенная ширина для "Синхронизировать"
-        sync_btn = Button(
-            text='Синхронизировать',
+        # Уменьшен шрифт для "Синхр."
+        btn_sync_layout.add_widget(Button(
+            text='Синхр.',
             font_size='11sp',
-            size_hint_x=0.7,
+            size_hint_x=0.5,
             on_press=self.sync_datetime
-        )
-        btn_sync_layout.add_widget(sync_btn)
+        ))
         layout.add_widget(Label(text=''))
         layout.add_widget(btn_sync_layout)
         
